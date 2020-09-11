@@ -42,6 +42,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject, Version=3.3.4.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.4\lib\net45\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -59,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationBindings\Bindings.cs" />
     <Compile Include="Contacts.cs">
       <DependentUpon>ModelDataBase.tt</DependentUpon>
     </Compile>
@@ -92,7 +96,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ModelDataBase.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Presenters\DerectionSenderPresenter.cs" />
+    <Compile Include="Presenters\CreatePresenter.cs" />
     <Compile Include="Repositories\DerectionSenderRepository.cs" />
     <Compile Include="Repositories\IDerectionSenderRepository.cs" />
     <Compile Include="RequestDerections.cs">

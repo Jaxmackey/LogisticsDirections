@@ -1,7 +1,9 @@
 ﻿using DerectionSender.Presenters;
+using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,9 +17,9 @@ namespace DerectionSender
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            var presenter = new CreatePresenter(new DerectionSenderForm(), new DerectionSenderRepository());
+            var kernel = new StandardKernel();
+            kernel.Load(Assembly.GetExecutingAssembly());
+            var presenter = kernel.Get<CreatePresenter>();
             presenter.Run();
         }
     }
