@@ -94,7 +94,7 @@
     </Compile>
     <Compile Include="Presenters\DerectionSenderPresenter.cs" />
     <Compile Include="Repositories\DerectionSenderRepository.cs" />
-    <Compile Include="Presenters\IDerectionSenderPresenter.cs" />
+    <Compile Include="Repositories\IDerectionSenderRepository.cs" />
     <Compile Include="RequestDerections.cs">
       <DependentUpon>ModelDataBase.tt</DependentUpon>
     </Compile>
