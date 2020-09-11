@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Contacts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Fax" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FK_Derection" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Countries">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CountryName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Prefix" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsIndexPresent" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Derections">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Derection" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FK_FromCountry" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FK_ToCountry" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IndexNumbers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Number" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FK_CountryIndex" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="RequestDerections">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FK_Derections" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="EmailBody" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="FK_Contact" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsPost" Type="bit" Nullable="false" />
+          <Property Name="PostedAt" Type="datetime" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Contacts_Derections">
+          <End Role="Derections" Type="Self.Derections" Multiplicity="1" />
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Derections">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Contacts">
+              <PropertyRef Name="FK_Derection" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Derections_FromCountries">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="Derections" Type="Self.Derections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Derections">
+              <PropertyRef Name="FK_FromCountry" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Derections_ToCountries">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="Derections" Type="Self.Derections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Derections">
+              <PropertyRef Name="FK_ToCountry" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IndexNumbers_CountriesIndex">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="0..1" />
+          <End Role="IndexNumbers" Type="Self.IndexNumbers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IndexNumbers">
+              <PropertyRef Name="FK_CountryIndex" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RequestDerections_Contacts">
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="1" />
+          <End Role="RequestDerections" Type="Self.RequestDerections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RequestDerections">
+              <PropertyRef Name="FK_Contact" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RequestDerections_Derections">
+          <End Role="Derections" Type="Self.Derections" Multiplicity="1" />
+          <End Role="RequestDerections" Type="Self.RequestDerections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Derections">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RequestDerections">
+              <PropertyRef Name="FK_Derections" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LBModelStoreContainer">
+          <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Derections" EntityType="Self.Derections" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IndexNumbers" EntityType="Self.IndexNumbers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RequestDerections" EntityType="Self.RequestDerections" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Contacts_Derections" Association="Self.FK_Contacts_Derections">
+            <End Role="Derections" EntitySet="Derections" />
+            <End Role="Contacts" EntitySet="Contacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Derections_FromCountries" Association="Self.FK_Derections_FromCountries">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="Derections" EntitySet="Derections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Derections_ToCountries" Association="Self.FK_Derections_ToCountries">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="Derections" EntitySet="Derections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IndexNumbers_CountriesIndex" Association="Self.FK_IndexNumbers_CountriesIndex">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="IndexNumbers" EntitySet="IndexNumbers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RequestDerections_Contacts" Association="Self.FK_RequestDerections_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="RequestDerections" EntitySet="RequestDerections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RequestDerections_Derections" Association="Self.FK_RequestDerections_Derections">
+            <End Role="Derections" EntitySet="Derections" />
+            <End Role="RequestDerections" EntitySet="RequestDerections" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Contacts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Fax" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FK_Derection" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Derections" Relationship="Self.FK_Contacts_Derections" FromRole="Contacts" ToRole="Derections" />
+          <NavigationProperty Name="RequestDerections" Relationship="LBModel.FK_RequestDerections_Contacts" FromRole="Contacts" ToRole="RequestDerections" />
+        </EntityType>
+        <EntityType Name="Countries">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CountryName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Prefix" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsIndexPresent" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Derections" Relationship="Self.FK_Derections_FromCountries" FromRole="Countries" ToRole="Derections" />
+          <NavigationProperty Name="Derections1" Relationship="Self.FK_Derections_ToCountries" FromRole="Countries" ToRole="Derections" />
+          <NavigationProperty Name="IndexNumbers" Relationship="Self.FK_IndexNumbers_CountriesIndex" FromRole="Countries" ToRole="IndexNumbers" />
+        </EntityType>
+        <EntityType Name="Derections">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Derection" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FK_FromCountry" Type="Guid" Nullable="false" />
+          <Property Name="FK_ToCountry" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Contacts" Relationship="Self.FK_Contacts_Derections" FromRole="Derections" ToRole="Contacts" />
+          <NavigationProperty Name="Countries" Relationship="Self.FK_Derections_FromCountries" FromRole="Derections" ToRole="Countries" />
+          <NavigationProperty Name="Countries1" Relationship="Self.FK_Derections_ToCountries" FromRole="Derections" ToRole="Countries" />
+          <NavigationProperty Name="RequestDerections" Relationship="LBModel.FK_RequestDerections_Derections" FromRole="Derections" ToRole="RequestDerections" />
+        </EntityType>
+        <EntityType Name="IndexNumbers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Number" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FK_CountryIndex" Type="Guid" />
+          <NavigationProperty Name="Countries" Relationship="Self.FK_IndexNumbers_CountriesIndex" FromRole="IndexNumbers" ToRole="Countries" />
+        </EntityType>
+        <Association Name="FK_Contacts_Derections">
+          <End Role="Derections" Type="Self.Derections" Multiplicity="1" />
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Derections">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Contacts">
+              <PropertyRef Name="FK_Derection" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Derections_FromCountries">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="Derections" Type="Self.Derections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Derections">
+              <PropertyRef Name="FK_FromCountry" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Derections_ToCountries">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="Derections" Type="Self.Derections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Derections">
+              <PropertyRef Name="FK_ToCountry" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IndexNumbers_CountriesIndex">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="0..1" />
+          <End Role="IndexNumbers" Type="Self.IndexNumbers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IndexNumbers">
+              <PropertyRef Name="FK_CountryIndex" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Contacts" EntityType="Self.Contacts" />
+          <EntitySet Name="Countries" EntityType="Self.Countries" />
+          <EntitySet Name="Derections" EntityType="Self.Derections" />
+          <EntitySet Name="IndexNumbers" EntityType="Self.IndexNumbers" />
+          <AssociationSet Name="FK_Contacts_Derections" Association="Self.FK_Contacts_Derections">
+            <End Role="Derections" EntitySet="Derections" />
+            <End Role="Contacts" EntitySet="Contacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Derections_FromCountries" Association="Self.FK_Derections_FromCountries">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="Derections" EntitySet="Derections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Derections_ToCountries" Association="Self.FK_Derections_ToCountries">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="Derections" EntitySet="Derections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IndexNumbers_CountriesIndex" Association="Self.FK_IndexNumbers_CountriesIndex">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="IndexNumbers" EntitySet="IndexNumbers" />
+          </AssociationSet>
+          <EntitySet Name="RequestDerections" EntityType="LBModel.RequestDerections" />
+          <AssociationSet Name="FK_RequestDerections_Contacts" Association="LBModel.FK_RequestDerections_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="RequestDerections" EntitySet="RequestDerections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RequestDerections_Derections" Association="LBModel.FK_RequestDerections_Derections">
+            <End Role="Derections" EntitySet="Derections" />
+            <End Role="RequestDerections" EntitySet="RequestDerections" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="RequestDerections">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="FK_Derections" Type="Guid" Nullable="false" />
+          <Property Name="EmailBody" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FK_Contact" Type="Guid" Nullable="false" />
+          <Property Name="IsPost" Type="Boolean" Nullable="false" />
+          <Property Name="PostedAt" Type="DateTime" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Contacts" Relationship="LBModel.FK_RequestDerections_Contacts" FromRole="RequestDerections" ToRole="Contacts" />
+          <NavigationProperty Name="Derections" Relationship="LBModel.FK_RequestDerections_Derections" FromRole="RequestDerections" ToRole="Derections" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_RequestDerections_Contacts">
+          <End Type="LBModel.Contacts" Role="Contacts" Multiplicity="1" />
+          <End Type="LBModel.RequestDerections" Role="RequestDerections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RequestDerections">
+              <PropertyRef Name="FK_Contact" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RequestDerections_Derections">
+          <End Type="LBModel.Derections" Role="Derections" Multiplicity="1" />
+          <End Type="LBModel.RequestDerections" Role="RequestDerections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Derections">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RequestDerections">
+              <PropertyRef Name="FK_Derections" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LBModelStoreContainer" CdmEntityContainer="LBEntities">
+          <EntitySetMapping Name="Contacts">
+            <EntityTypeMapping TypeName="LBModel.Contacts">
+              <MappingFragment StoreEntitySet="Contacts">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Fax" ColumnName="Fax" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="FK_Derection" ColumnName="FK_Derection" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Countries">
+            <EntityTypeMapping TypeName="LBModel.Countries">
+              <MappingFragment StoreEntitySet="Countries">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CountryName" ColumnName="CountryName" />
+                <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+                <ScalarProperty Name="IsIndexPresent" ColumnName="IsIndexPresent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Derections">
+            <EntityTypeMapping TypeName="LBModel.Derections">
+              <MappingFragment StoreEntitySet="Derections">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Derection" ColumnName="Derection" />
+                <ScalarProperty Name="FK_FromCountry" ColumnName="FK_FromCountry" />
+                <ScalarProperty Name="FK_ToCountry" ColumnName="FK_ToCountry" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IndexNumbers">
+            <EntityTypeMapping TypeName="LBModel.IndexNumbers">
+              <MappingFragment StoreEntitySet="IndexNumbers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="FK_CountryIndex" ColumnName="FK_CountryIndex" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RequestDerections">
+            <EntityTypeMapping TypeName="LBModel.RequestDerections">
+              <MappingFragment StoreEntitySet="RequestDerections">
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="PostedAt" ColumnName="PostedAt" />
+                <ScalarProperty Name="IsPost" ColumnName="IsPost" />
+                <ScalarProperty Name="FK_Contact" ColumnName="FK_Contact" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="EmailBody" ColumnName="EmailBody" />
+                <ScalarProperty Name="FK_Derections" ColumnName="FK_Derections" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

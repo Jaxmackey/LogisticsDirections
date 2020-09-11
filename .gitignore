@@ -1,0 +1,7 @@
+/.vs
+DerectionSender/bin/Debug
+DerectionSender/bin/Release
+DerectionSender/obj/Debug
+DerectionSender/obj/Release
+DerectionSender/App.config
+/packages
