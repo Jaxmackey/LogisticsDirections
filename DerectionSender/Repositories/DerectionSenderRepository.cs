@@ -22,19 +22,34 @@ namespace DerectionSender.Presenters
             _context.SaveChanges();
         }
 
-        public IQueryable<Countries> GetCountries()
+        public IQueryable<string> GetCountriesNames()
         {
-            return _context.Countries;
+            return _context.Countries.Where(y => !y.IsIndexPresent).Select(x => x.CountryName);
         }
 
-        public IQueryable<Derections> GetDerections()
+        public Derections GetDerectionsByName(string derectionName)
         {
-            return _context.Derections;
+            return _context.Derections.FirstOrDefault(x => x.Derection == derectionName);
         }
 
         public IQueryable<RequestDerections> GetRequestDerections()
         {
             return _context.RequestDerections;
+        }
+
+        public RequestDerections GetRequestDerectionsById(Guid guid)
+        {
+            return _context.RequestDerections.FirstOrDefault(x => x.Id == guid);
+        }
+
+        public IQueryable<RequestDerections> GetRequestDerectionsIsNotDeleted()
+        {
+            return _context.RequestDerections.Where(x => !x.IsDeleted);
+        }
+
+        public IQueryable<RequestDerections> GetRequestDerectionsIsNotDeletedIsNotPosted()
+        {
+            return _context.RequestDerections.Where(x => !x.IsDeleted && !x.IsPost);
         }
 
         public void SaveChanges()

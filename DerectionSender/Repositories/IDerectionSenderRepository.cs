@@ -10,8 +10,11 @@ namespace DerectionSender.Presenters
     {
         void Create(RequestDerections requestDerections);
         IQueryable<RequestDerections> GetRequestDerections();
-        IQueryable<Countries> GetCountries();
-        IQueryable<Derections> GetDerections();
+        IQueryable<RequestDerections> GetRequestDerectionsIsNotDeleted();
+        IQueryable<RequestDerections> GetRequestDerectionsIsNotDeletedIsNotPosted();
+        RequestDerections GetRequestDerectionsById(Guid guid);
+        IQueryable<string> GetCountriesNames();
+        Derections GetDerectionsByName(string derectionName);
         void DeleteAllDerections();
         void SaveChanges();
     }

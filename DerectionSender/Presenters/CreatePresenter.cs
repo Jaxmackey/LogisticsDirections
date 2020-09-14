@@ -34,7 +34,7 @@ namespace DerectionSender.Presenters
         }
         public void Load()
         {
-            var countries = this._derectionSenderRepository.GetCountries().Where(y => !y.IsIndexPresent).Select(x => x.CountryName).ToArray();
+            var countries = this._derectionSenderRepository.GetCountriesNames().ToArray();
             this._derectionSenderView.SubjectTextBox = ConfigurationManager.AppSettings["Subject"];
             this._derectionSenderView.RichEmailTextBox = ConfigurationManager.AppSettings["Body"];
             this._derectionSenderView.SetFromDerectionCombobox = countries;
@@ -61,7 +61,7 @@ namespace DerectionSender.Presenters
                 return;
             }
             var currentDerectionName = $"{this._derectionSenderView.FromDerection} - {this._derectionSenderView.ToDerection}";
-            var currentDerections = this._derectionSenderRepository.GetDerections().ToList().FirstOrDefault(x => x.Derection == currentDerectionName);
+            var currentDerections = this._derectionSenderRepository.GetDerectionsByName(currentDerectionName);
             if (currentDerections.Contacts.Count > 1)
             {
                 foreach (var item in currentDerections.Contacts)
@@ -103,7 +103,7 @@ namespace DerectionSender.Presenters
         public void UpdateDataGrid()
         {
             this._derectionSenderView.ClearGrid();
-            var requestDerectionsWithoutDeletedRows = this._derectionSenderRepository.GetRequestDerections().Where(x => !x.IsDeleted);
+            var requestDerectionsWithoutDeletedRows = this._derectionSenderRepository.GetRequestDerectionsIsNotDeleted();
             foreach (var item in requestDerectionsWithoutDeletedRows)
             {
                 this._derectionSenderView.AddRowToGrid(item.Derections.Derection, item.Contacts.Email, item.Subject, item.EmailBody, "Ready", item.IsPost);
@@ -128,7 +128,7 @@ namespace DerectionSender.Presenters
                 this._derectionSenderView.ShowValidateError("Почта и пароль должны быть заполнены.");
                 return;
             }
-            var requestDerections = this._derectionSenderRepository.GetRequestDerections().Where(x => !x.IsDeleted && !x.IsPost).ToList();
+            var requestDerections = this._derectionSenderRepository.GetRequestDerectionsIsNotDeletedIsNotPosted().ToList();
             if (requestDerections.Count == 0)
             {
                 this._derectionSenderView.ShowValidateError("Создайте заявки.");
@@ -158,7 +158,7 @@ namespace DerectionSender.Presenters
                     try
                     {
                         smtp.Send(mail);
-                        var currentDerection = this._derectionSenderRepository.GetRequestDerections().ToList().FirstOrDefault(x => x.Id == requestDerections[j].Id);
+                        var currentDerection = this._derectionSenderRepository.GetRequestDerectionsById(requestDerections[j].Id);
                         currentDerection.IsPost = true;
                         this._derectionSenderRepository.SaveChanges();
                         this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus("Success", requestDerections[j])));
