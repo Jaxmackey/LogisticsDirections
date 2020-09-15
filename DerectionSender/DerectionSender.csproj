@@ -98,7 +98,9 @@
     </Compile>
     <Compile Include="Presenters\CreatePresenter.cs" />
     <Compile Include="Repositories\DerectionSenderRepository.cs" />
+    <Compile Include="Repositories\EmailRepository.cs" />
     <Compile Include="Repositories\IDerectionSenderRepository.cs" />
+    <Compile Include="Repositories\IEmailRepository.cs" />
     <Compile Include="RequestDerections.cs">
       <DependentUpon>ModelDataBase.tt</DependentUpon>
     </Compile>

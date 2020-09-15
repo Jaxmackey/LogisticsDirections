@@ -1,4 +1,5 @@
-﻿using DerectionSender.Views;
+﻿using DerectionSender.Repositories;
+using DerectionSender.Views;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,11 +17,13 @@ namespace DerectionSender.Presenters
     {
         private readonly IDerectionSenderRepository _derectionSenderRepository;
         private readonly IDerectionSenderView _derectionSenderView;
+        private readonly IEmailRepository _emailRepository;
         private delegate void EnableButtonDelegate();
         private delegate void ChangeStatusDelegate();
-        public CreatePresenter(IDerectionSenderView derectionSenderView, IDerectionSenderRepository derectionSenderRepository)
+        public CreatePresenter(IDerectionSenderView derectionSenderView, IDerectionSenderRepository derectionSenderRepository, IEmailRepository emailRepository)
         {
             this._derectionSenderRepository = derectionSenderRepository;
+            this._emailRepository = emailRepository;
             this._derectionSenderView = derectionSenderView;
             this._derectionSenderView.InitComboboxies += () => Load();
             this._derectionSenderView.InitComboboxies += () => UpdateDataGrid();
@@ -140,32 +143,28 @@ namespace DerectionSender.Presenters
                 po.MaxDegreeOfParallelism = 15;
                 Parallel.For(0, requestDerections.Count, po, (j) =>
                 {
-                    MailAddress to = new MailAddress(requestDerections[j].Contacts.Email);
-                    MailAddress from = new MailAddress(this._derectionSenderView.EmailTextBox);
-                    MailMessage mail = new MailMessage(from, to);
-                    mail.Subject = requestDerections[j].Subject;
-
-                    mail.Body = requestDerections[j].EmailBody;
-
-                    SmtpClient smtp = new SmtpClient();
-                    smtp.Host = "smtp.yandex.ru";
-                    smtp.Port = 587;
-                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    smtp.Credentials = new NetworkCredential(
-                        this._derectionSenderView.EmailTextBox, this._derectionSenderView.PasswordTextBox);
-                    smtp.EnableSsl = true;
-                    this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus("Init Smtp", requestDerections[j])));
-                    try
+                    this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus("Create Smtp connection", requestDerections[j])));
+                    var emailStatus = this._emailRepository
+                    .SendEmail(
+                        requestDerections[j].Contacts.Email,
+                        this._derectionSenderView.EmailTextBox,
+                        this._derectionSenderView.PasswordTextBox,
+                        ConfigurationManager.AppSettings["Host"],
+                        Convert.ToInt32(ConfigurationManager.AppSettings["Port"]),
+                        requestDerections[j].Subject,
+                        requestDerections[j].EmailBody
+                        );
+                    if (emailStatus == "success")
                     {
-                        smtp.Send(mail);
                         var currentDerection = this._derectionSenderRepository.GetRequestDerectionsById(requestDerections[j].Id);
                         currentDerection.IsPost = true;
+                        currentDerection.PostedAt = DateTime.Now;
                         this._derectionSenderRepository.SaveChanges();
                         this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus("Success", requestDerections[j])));
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus(ex.Message, requestDerections[j])));
+                        this._derectionSenderView.GridInvoke(new ChangeStatusDelegate(() => this.ChangeStatus(emailStatus, requestDerections[j])));
                     }
                 });
                 this._derectionSenderView.StartSendButton.Invoke(new EnableButtonDelegate(EnableStartButton));
@@ -181,7 +180,7 @@ namespace DerectionSender.Presenters
             int rowIndex = this._derectionSenderView.GetGridIndexByCellValue("Text", requestDerections.EmailBody);
             if (rowIndex != -1)
             {
-                if (text == "Init Smtp")
+                if (text == "Create Smtp connection")
                 {
                     this._derectionSenderView.ChangeValueAndColorCellByIndex(rowIndex, 4, text, Color.Yellow);
                     return;
